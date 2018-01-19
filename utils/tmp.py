@@ -12,6 +12,10 @@ import numpy as np
 
 
 def transform(in_data):
+    """
+    画像の白黒を反転する
+    in_data: 画素値が0.0~1.0に正規化されたグレースケール画像
+    """
     return 1.0 - in_data
 
 
