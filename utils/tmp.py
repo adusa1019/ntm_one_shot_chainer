@@ -11,6 +11,10 @@ import chainer
 import numpy as np
 
 
+def transform(in_data):
+    return 1.0 - in_data
+
+
 class SamplingDataset(chainer.dataset.DatasetMixin):
 
     def __init__(
@@ -21,7 +25,8 @@ class SamplingDataset(chainer.dataset.DatasetMixin):
             num_sample_class,
             num_sample_per_class,
     ):
-        self.dataset = chainer.datasets.ImageDataset(dataset)
+        self.dataset = chainer.datasets.TransformDataset(
+            chainer.datasets.ImageDataset(dataset), transform)
         self.num_class = num_class
         self.num_data_per_class = num_data_per_class
         self.num_sample_class = num_sample_class
@@ -62,7 +67,7 @@ def make_sampling_dataset_for_omniglot_traindata(basedir,
 
 class RandomSampleIterator(chainer.dataset.Iterator):
 
-    def __init__(self, dataset, batch_size, iter_per_epoch=10, shuffle=True):
+    def __init__(self, dataset, batch_size, iter_per_epoch=1, shuffle=True):
         self.dataset = dataset
         self.batch_size = batch_size
         self.iter_per_epoch = iter_per_epoch
@@ -151,7 +156,7 @@ if __name__ == "__main__":
 
     sd = make_sampling_dataset_for_omniglot_traindata(args.basedir)
     print(np.shape(sd()))
-    rsi = RandomSampleIterator(sd, 32, 10)
+    rsi = RandomSampleIterator(sd, 16, 16)
     while rsi.epoch < 100:
         batch = rsi.next()
         print(rsi.epoch)
